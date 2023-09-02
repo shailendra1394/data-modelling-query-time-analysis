@@ -1,3 +1,5 @@
+-- creating dimension table for date
+
 create table star_schema.dimDate(
 	date_key integer not null primary key,
 	date date not null,
@@ -8,6 +10,8 @@ create table star_schema.dimDate(
 	week smallint not null,
 	is_weekend boolean
 );
+
+-- customer dimension table
 
 create table star_schema.dimCustomer(
 
@@ -27,6 +31,8 @@ create table star_schema.dimCustomer(
 );
 
 
+-- movie dimension table
+
 create table star_schema.dimMovie(
 
 	movie_key serial primary key,
@@ -42,6 +48,9 @@ create table star_schema.dimMovie(
 	specail_feature varchar(60) not null
 	
 );
+
+
+-- dimension table for storing store information
 
 create table star_schema.dimStore(
 
@@ -60,6 +69,8 @@ create table star_schema.dimStore(
 );
 
 
+-- inserting data into date dim table
+
 insert into star_schema.dimDate
 (date_key,date,year,quarter,month,day,week,is_weekend)
 select 
@@ -76,6 +87,8 @@ from payment;
 
 select * from star_schema.dimDate;
 
+
+-- inserting data into customer dim table
 
 insert into star_schema.dimCustomer
 (customer_key,customer_id,first_name,last_name,email,address,country,city,active,create_date,start_date,end_date)
@@ -102,6 +115,8 @@ select * from star_schema.dimCustomer;
 select * from Customer;
 
 
+-- inseritng data in movie dim table
+
 insert into star_schema.dimMovie(movie_key,movie_id,title,description,release_year,language_id,original_language,rental_duration,length,rating,specail_feature)
 select 
 
@@ -121,6 +136,8 @@ join language l on f.language_id=l.language_id;
 
 
 
+
+-- inserting data in store dim table
 
 insert into star_schema.dimStore
 (store_key,store_id,manager_first_name,manager_last_name,postal_code,address,country,city,start_date,end_date)
@@ -146,6 +163,8 @@ select * from star_schema.dimStore;
 
 
 
+-- Craeting facts table
+
 CREATE TABLE star_schema.factSales(
 	sales_key SERIAL PRIMARY KEY, 
  	date_key integer REFERENCES star_schema.dimDate (date_key), 
@@ -156,6 +175,8 @@ CREATE TABLE star_schema.factSales(
  );
  
  
+ -- inserting into sales table
+
  insert into star_schema.factSales(date_key,customer_key,movie_key,store_key,sales_amount)
  select
  	TO_CHAR (p.payment_date :: DATE, 'yYYMMDD')::integer as date_key,
